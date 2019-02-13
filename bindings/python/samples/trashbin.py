@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+self.clearRep#!/usr/bin/env python
 from threading import Timer
 import time
 import wiringpi
@@ -27,7 +27,7 @@ class TrashBin(SampleBase):
         return mask
 
     def clearRep(self,limit):
-        applyMask(self.image,limit,0)
+        self.applyMask(self.image,limit,0)
         urllib2.urlopen(self.local_url+"clear")
 
     def run(self):
@@ -48,9 +48,9 @@ class TrashBin(SampleBase):
             if wiringpi.digitalRead(20):
                 count = count + 1
                 if count == limit:
-                    double_buffer.SetImage(applyMask(self.image,limit,limit),0)
+                    double_buffer.SetImage(self.applyMask(self.image,limit,limit),0)
                 else:
-                    double_buffer.SetImage(applyMask(self.image,limit,count),0)
+                    double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
                 double_buffer = self.matrix.SwapOnVSync(double_buffer)
 
                 urllib2.urlopen(self.url+self.device_id)
