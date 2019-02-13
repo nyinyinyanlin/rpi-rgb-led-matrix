@@ -58,13 +58,13 @@ class TrashBin(SampleBase):
                     count = 0
                     clear_timer = Timer(30.0, self.clearRep,[limit])
                     clear_timer.start()
-            else if not wiringpi.digitalRead(20) and self.insertPinState:
+            elif not wiringpi.digitalRead(20) and self.insertPinState:
                 self.insertPinState = False
 
             if wiringpi.digitalRead(21) and not self.cleanPinState:
                 self.cleanPinState = True
                 urllib2.urlopen(self.clean_url+self.device_id)
-            else if not wiringpi.digitalRead(21) and self.cleanPinState:
+            elif not wiringpi.digitalRead(21) and self.cleanPinState:
                 self.cleanPinState = False
 
             time.sleep(0.01)
