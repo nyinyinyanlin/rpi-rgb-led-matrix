@@ -57,8 +57,8 @@ class TrashBin(SampleBase):
                 if count == limit:
                     urllib2.urlopen(self.local_url+"win")
                     urllib2.urlopen(self.rep_url+self.device_id)
-                    self.count = 0
-                    clear_timer = Timer(30.0, self.clearRep,[self,limit])
+                    count = 0
+                    clear_timer = Timer(30.0, self.clearRep,[limit])
                     clear_timer.start()
 
             if wiringpi.digitalRead(21):
