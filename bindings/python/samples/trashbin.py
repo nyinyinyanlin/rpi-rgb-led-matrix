@@ -29,6 +29,7 @@ class TrashBin(SampleBase):
 
     def clearRep(self,limit,db):
         db.SetImage(self.applyMask(self.image,limit,0),0)
+        db = self.matrix.SwapOnVSync(db)
         urllib2.urlopen(self.local_url+"clear")
 
     def run(self):
