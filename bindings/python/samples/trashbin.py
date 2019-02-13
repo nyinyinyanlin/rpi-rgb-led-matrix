@@ -20,6 +20,16 @@ class TrashBin(SampleBase):
         wiringpi.pinMode(21, 0)
         print("init")
 
+    def applyMask(self,img,rows,count):
+        mask = img.copy()
+        mask_draw = ImageDraw.Draw(mask)
+        mask_draw.rectangle([(0,0),(img.size[0],img.size[1]-(img.size[1]/rows)*count)],fill=0)
+        return mask
+
+    def clearRep(self,limit):
+        applyMask(self.image,limit,0)
+        urllib2.urlopen(self.local_url+"clear")
+
     def run(self):
         print("run start")
         if not 'image' in self.__dict__:
@@ -55,16 +65,6 @@ class TrashBin(SampleBase):
                 urllib2.urlopen(self.clean_url+self.device_id)
 
             time.sleep(0.01)
-
-        def applyMask(self,img,rows,count):
-            mask = img.copy()
-            mask_draw = ImageDraw.Draw(mask)
-            mask_draw.rectangle([(0,0),(img.size[0],img.size[1]-(img.size[1]/rows)*count)],fill=0)
-            return mask
-
-        def clearRep(self,limit):
-            applyMask(self.image,limit,0)
-            urllib2.urlopen(self.local_url+"clear")
 
 if __name__ == "__main__":
     wiringpi.wiringPiSetupGpio()
