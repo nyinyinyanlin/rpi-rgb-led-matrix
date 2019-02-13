@@ -20,7 +20,6 @@ class TrashBin(SampleBase):
         wiringpi.pinMode(21, 0)
         self.insertPinState = False
         self.cleanPinState = False
-        self.double_buffer = self.matrix.CreateFrameCanvas()
 
     def applyMask(self,img,rows,count):
         mask = img.copy()
@@ -28,8 +27,8 @@ class TrashBin(SampleBase):
         mask_draw.rectangle([(0,0),(img.size[0],img.size[1]-(img.size[1]/rows)*count)],fill=0)
         return mask
 
-    def clearRep(self,limit):
-        self.double_buffer.SetImage(self.applyMask(self.image,limit,0),0)
+    def clearRep(self,limit,db):
+        db.SetImage(self.applyMask(self.image,limit,0),0)
         urllib2.urlopen(self.local_url+"clear")
 
     def run(self):
@@ -41,22 +40,24 @@ class TrashBin(SampleBase):
         count = 0
         limit = 10
 
+        double_buffer = self.matrix.CreateFrameCanvas()
+
         while True:
             if wiringpi.digitalRead(20) and not self.insertPinState:
                 self.insertPinState = True
                 count = count + 1
                 if count == limit:
-                    self.double_buffer.SetImage(self.applyMask(self.image,limit,limit),0)
+                    double_buffer.SetImage(self.applyMask(self.image,limit,limit),0)
                 else:
-                    self.double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
-                self.double_buffer = self.matrix.SwapOnVSync(double_buffer)
+                    double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
+                double_buffer = self.matrix.SwapOnVSync(double_buffer)
 
                 urllib2.urlopen(self.url+self.device_id)
                 if count == limit:
                     urllib2.urlopen(self.local_url+"win")
                     urllib2.urlopen(self.rep_url+self.device_id)
                     count = 0
-                    clear_timer = Timer(30.0, self.clearRep,[limit])
+                    clear_timer = Timer(30.0, self.clearRep,[limit,double_buffer])
                     clear_timer.start()
             elif not wiringpi.digitalRead(20) and self.insertPinState:
                 self.insertPinState = False
