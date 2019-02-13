@@ -18,8 +18,10 @@ class TrashBin(SampleBase):
         self.device_id = "B001"
         wiringpi.pinMode(20, 0)
         wiringpi.pinMode(21, 0)
+        print("init")
 
     def run(self):
+        print("run start")
         if not 'image' in self.__dict__:
             self.image = Image.open(self.args.image).convert('RGB')
         if self.image.size[0] != self.matrix.width and self.image.size[1] != self.matrix.height:
@@ -29,8 +31,10 @@ class TrashBin(SampleBase):
         limit = 10
 
         double_buffer = self.matrix.CreateFrameCanvas()
-
+        print("Created canvas")
         while True:
+            print("Loop")
+            print(wiringpi.digitalRead(20),wiringpi.digitalRead(21))
             if wiringpi.digitalRead(20):
                 count = count + 1
                 if count == limit:
