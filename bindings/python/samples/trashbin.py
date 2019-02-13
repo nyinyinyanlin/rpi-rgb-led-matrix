@@ -18,7 +18,8 @@ class TrashBin(SampleBase):
         self.device_id = "B001"
         wiringpi.pinMode(20, 0)
         wiringpi.pinMode(21, 0)
-        print("init")
+        self.insertPinState = False
+        self.cleanPinState = False
 
     def applyMask(self,img,rows,count):
         mask = img.copy()
@@ -27,11 +28,10 @@ class TrashBin(SampleBase):
         return mask
 
     def clearRep(self,limit):
-        self.applyMask(self.image,limit,0)
+        self.double_buffer.SetImage(self.applyMask(self.image,limit,0),0)
         urllib2.urlopen(self.local_url+"clear")
 
     def run(self):
-        print("run start")
         if not 'image' in self.__dict__:
             self.image = Image.open(self.args.image).convert('RGB')
         if self.image.size[0] != self.matrix.width and self.image.size[1] != self.matrix.height:
@@ -40,18 +40,16 @@ class TrashBin(SampleBase):
         count = 0
         limit = 10
 
-        double_buffer = self.matrix.CreateFrameCanvas()
-        print("Created canvas")
+        self.double_buffer = self.matrix.CreateFrameCanvas()
         while True:
-            print("Loop")
-            print(wiringpi.digitalRead(20),wiringpi.digitalRead(21))
-            if wiringpi.digitalRead(20):
+            if wiringpi.digitalRead(20) and not self.insertPinState:
+                self.insertPinState = True
                 count = count + 1
                 if count == limit:
-                    double_buffer.SetImage(self.applyMask(self.image,limit,limit),0)
+                    self.double_buffer.SetImage(self.applyMask(self.image,limit,limit),0)
                 else:
-                    double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
-                double_buffer = self.matrix.SwapOnVSync(double_buffer)
+                    self.double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
+                self.double_buffer = self.matrix.SwapOnVSync(double_buffer)
 
                 urllib2.urlopen(self.url+self.device_id)
                 if count == limit:
@@ -60,9 +58,14 @@ class TrashBin(SampleBase):
                     count = 0
                     clear_timer = Timer(30.0, self.clearRep,[limit])
                     clear_timer.start()
+            else if not wiringpi.digitalRead(20) and self.insertPinState:
+                self.insertPinState = False
 
-            if wiringpi.digitalRead(21):
+            if wiringpi.digitalRead(21) and not self.cleanPinState:
+                self.cleanPinState = True
                 urllib2.urlopen(self.clean_url+self.device_id)
+            else if not wiringpi.digitalRead(21) and self.cleanPinState:
+                self.cleanPinState = False
 
             time.sleep(0.01)
 
