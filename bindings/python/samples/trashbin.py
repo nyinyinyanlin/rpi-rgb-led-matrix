@@ -20,7 +20,7 @@ class TrashBin(SampleBase):
         wiringpi.pinMode(21, 0)
         self.insertPinState = False
         self.cleanPinState = False
-        self.double_buffer = None
+        self.double_buffer = self.matrix.CreateFrameCanvas()
 
     def applyMask(self,img,rows,count):
         mask = img.copy()
@@ -41,7 +41,6 @@ class TrashBin(SampleBase):
         count = 0
         limit = 10
 
-        self.double_buffer = self.matrix.CreateFrameCanvas()
         while True:
             if wiringpi.digitalRead(20) and not self.insertPinState:
                 self.insertPinState = True
