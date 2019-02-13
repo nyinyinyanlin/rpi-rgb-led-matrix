@@ -14,10 +14,10 @@ class TrashBin(SampleBase):
         self.url = "https://ygnbinhaustrashbin.herokuapp.com/in/"
         self.rep_url = "https://ygnbinhaustrashbin.herokuapp.com/rep/"
         self.clean_url = "https://ygnbinhaustrashbin.herokuapp.com/clean/"
-        self.local_url = "http://localhost:8000/"
-        self.device_id = "ID001"
-        wiringpi.pinMode(6, 0)
-        wiringpi.pinMode(6, 0)
+        self.local_url = "http://192.168.43.223:8000/"
+        self.device_id = "B001"
+        wiringpi.pinMode(20, 0)
+        wiringpi.pinMode(21, 0)
 
     def run(self):
         if not 'image' in self.__dict__:
@@ -31,7 +31,7 @@ class TrashBin(SampleBase):
         double_buffer = self.matrix.CreateFrameCanvas()
 
         while True:
-            if wiringpi.digitalRead():
+            if wiringpi.digitalRead(20):
                 count = count + 1
                 if count == limit:
                     double_buffer.SetImage(applyMask(self.image,limit,limit),0)
@@ -47,7 +47,7 @@ class TrashBin(SampleBase):
                     clear_timer = Timer(30.0, clearRep,[self,limit])
                     clear_timer.start()
 
-            if wiringpi.digitalRead():
+            if wiringpi.digitalRead(21):
                 urllib2.urlopen(self.clean_url+self.device_id)
 
             time.sleep(0.01)
@@ -61,10 +61,7 @@ class TrashBin(SampleBase):
         def clearRep(self,limit):
             applyMask(self.image,limit,0)
             urllib2.urlopen(self.local_url+"clear")
-# Main function
-# e.g. call with
-#  sudo ./image-scroller.py --chain=4
-# if you have a chain of four
+
 if __name__ == "__main__":
     wiringpi.wiringPiSetupGpio()
     trash_bin = TrashBin()
