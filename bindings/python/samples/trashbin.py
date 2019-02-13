@@ -20,6 +20,7 @@ class TrashBin(SampleBase):
         wiringpi.pinMode(21, 0)
         self.insertPinState = False
         self.cleanPinState = False
+        self.double_buffer = None
 
     def applyMask(self,img,rows,count):
         mask = img.copy()
