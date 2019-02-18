@@ -14,7 +14,7 @@ class TrashBin(SampleBase):
         self.url = "https://ygnbinhaustrashbin.herokuapp.com/in/"
         self.rep_url = "https://ygnbinhaustrashbin.herokuapp.com/rep/"
         self.clean_url = "https://ygnbinhaustrashbin.herokuapp.com/clean/"
-        self.local_url = "http://192.168.43.223:8000/"
+        self.local_url = "http://localhost:8000/"
         self.device_id = "B001"
         wiringpi.pinMode(20, 0)
         wiringpi.pinMode(21, 0)
