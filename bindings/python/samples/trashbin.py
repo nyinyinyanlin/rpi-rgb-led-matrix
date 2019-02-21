@@ -16,7 +16,7 @@ class TrashBin(SampleBase):
         self.clean_url = "https://ygnbinhaustrashbin.herokuapp.com/clean/"
         self.local_url = "http://localhost:8000/"
         self.device_id = "B001"
-        wiringpi.pinMode(20, 0)
+        wiringpi.pinMode(16, 0)
         wiringpi.pinMode(21, 0)
         self.insertPinState = False
         self.cleanPinState = False
@@ -44,7 +44,7 @@ class TrashBin(SampleBase):
         double_buffer = self.matrix.CreateFrameCanvas()
 
         while True:
-            if wiringpi.digitalRead(20) and not self.insertPinState:
+            if wiringpi.digitalRead(16) and not self.insertPinState:
                 self.insertPinState = True
                 count = count + 1
                 if count == limit:
@@ -60,7 +60,7 @@ class TrashBin(SampleBase):
                     count = 0
                     clear_timer = Timer(30.0, self.clearRep,[limit,double_buffer])
                     clear_timer.start()
-            elif not wiringpi.digitalRead(20) and self.insertPinState:
+            elif not wiringpi.digitalRead(16) and self.insertPinState:
                 self.insertPinState = False
 
             if wiringpi.digitalRead(21) and not self.cleanPinState:
