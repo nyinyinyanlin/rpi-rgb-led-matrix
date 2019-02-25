@@ -14,7 +14,7 @@ class TrashBin(SampleBase):
         self.url = "https://ygnbinhaustrashbin.herokuapp.com/in/"
         self.rep_url = "https://ygnbinhaustrashbin.herokuapp.com/rep/"
         self.clean_url = "https://ygnbinhaustrashbin.herokuapp.com/clean/"
-        self.local_url = "http://kioskpi:8000/"
+        self.kiosk_url = "http://kioskpi:8000/"
         self.device_id = "B001"
         wiringpi.pinMode(16, 0)
         wiringpi.pinMode(21, 0)
@@ -30,7 +30,7 @@ class TrashBin(SampleBase):
     def clearRep(self,limit,db):
         db.SetImage(self.applyMask(self.image,limit,0),0)
         db = self.matrix.SwapOnVSync(db)
-        urllib2.urlopen(self.local_url+"clear")
+        urllib2.urlopen(self.kiosk_url+"clear")
 
     def run(self):
         if not 'image' in self.__dict__:
@@ -53,9 +53,10 @@ class TrashBin(SampleBase):
                     double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
                 double_buffer = self.matrix.SwapOnVSync(double_buffer)
 
+                urllib2.urlopen(self.kiosk_url+"sound")
                 urllib2.urlopen(self.url+self.device_id)
                 if count == limit:
-                    urllib2.urlopen(self.local_url+"win")
+                    urllib2.urlopen(self.kiosk_url+"win")
                     urllib2.urlopen(self.rep_url+self.device_id)
                     count = 0
                     clear_timer = Timer(30.0, self.clearRep,[limit,double_buffer])
