@@ -2,6 +2,7 @@
 from threading import Timer
 import time
 import wiringpi
+import pygame
 from samplebase import SampleBase
 from PIL import Image, ImageDraw
 import urllib
@@ -52,6 +53,8 @@ class TrashBin(SampleBase):
                 else:
                     double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
                 double_buffer = self.matrix.SwapOnVSync(double_buffer)
+                if pygame.mixer.music.get_busy() == False:
+                    pygame.mixer.music.play()
 
                 urllib2.urlopen(self.url+self.device_id)
                 if count == limit:
@@ -69,10 +72,14 @@ class TrashBin(SampleBase):
             elif not wiringpi.digitalRead(21) and self.cleanPinState:
                 self.cleanPinState = False
 
-            time.sleep(0.01)
+            while pygame.mixer.music.get_busy() == True:
+                pass
 
 if __name__ == "__main__":
     wiringpi.wiringPiSetupGpio()
+    pygame.mixer.init()
+    pygame.mixer.music.load("cocacola.ogg")
+    pygame.mixer.music.set_volume(1.0)
     trash_bin = TrashBin()
     if (not trash_bin.process()):
         trash_bin.print_help()
