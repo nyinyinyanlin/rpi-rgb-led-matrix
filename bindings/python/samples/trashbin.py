@@ -2,7 +2,6 @@
 from threading import Timer
 import time
 import wiringpi
-import pygame
 from samplebase import SampleBase
 from PIL import Image, ImageDraw
 import urllib
@@ -15,7 +14,7 @@ class TrashBin(SampleBase):
         self.url = "https://ygnbinhaustrashbin.herokuapp.com/in/"
         self.rep_url = "https://ygnbinhaustrashbin.herokuapp.com/rep/"
         self.clean_url = "https://ygnbinhaustrashbin.herokuapp.com/clean/"
-        self.local_url = "http://localhost:8000/"
+        self.local_url = "http://kioskpi:8000/"
         self.device_id = "B001"
         wiringpi.pinMode(16, 0)
         wiringpi.pinMode(21, 0)
@@ -53,9 +52,6 @@ class TrashBin(SampleBase):
                 else:
                     double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
                 double_buffer = self.matrix.SwapOnVSync(double_buffer)
-                if pygame.mixer.music.get_busy() == False:
-                    print("Play sound")
-                    pygame.mixer.music.play()
 
                 urllib2.urlopen(self.url+self.device_id)
                 if count == limit:
@@ -73,14 +69,8 @@ class TrashBin(SampleBase):
             elif not wiringpi.digitalRead(21) and self.cleanPinState:
                 self.cleanPinState = False
 
-            while pygame.mixer.music.get_busy() == True:
-                print("Still playing sound")
-
 if __name__ == "__main__":
     wiringpi.wiringPiSetupGpio()
-    pygame.mixer.init()
-    pygame.mixer.music.load("cocacola.ogg")
-    pygame.mixer.music.set_volume(1.0)
     trash_bin = TrashBin()
     if (not trash_bin.process()):
         trash_bin.print_help()
