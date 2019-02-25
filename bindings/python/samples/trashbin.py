@@ -54,6 +54,7 @@ class TrashBin(SampleBase):
                     double_buffer.SetImage(self.applyMask(self.image,limit,count),0)
                 double_buffer = self.matrix.SwapOnVSync(double_buffer)
                 if pygame.mixer.music.get_busy() == False:
+                    print("Play sound")
                     pygame.mixer.music.play()
 
                 urllib2.urlopen(self.url+self.device_id)
@@ -73,7 +74,7 @@ class TrashBin(SampleBase):
                 self.cleanPinState = False
 
             while pygame.mixer.music.get_busy() == True:
-                pass
+                print("Still playing sound")
 
 if __name__ == "__main__":
     wiringpi.wiringPiSetupGpio()
