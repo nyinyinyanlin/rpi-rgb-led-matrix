@@ -44,6 +44,8 @@ class TrashBin(SampleBase):
         double_buffer = self.matrix.CreateFrameCanvas()
         double_buffer.SetImage(self.image,0)
         time.sleep(5)
+        double_buffer = self.matrix.SwapOnVSync(double_buffer)
+        
         while True:
             if wiringpi.digitalRead(16) and not self.insertPinState:
                 self.insertPinState = True
